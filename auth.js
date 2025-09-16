@@ -325,7 +325,7 @@ class AuthManager {
     }
 
     isProfileComplete(profileData) {
-        const requiredFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'address', 'city', 'country'];
+        const requiredFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'address', 'city', 'country', 'university', 'course', 'grade', 'studyStart', 'graduationDate'];
         return requiredFields.every(field => profileData[field] && profileData[field].trim() !== '');
     }
 
@@ -368,6 +368,32 @@ class AuthManager {
             skillsSection.style.display = 'none';
         }
         
+        // Update education section
+        const educationSection = document.getElementById('educationSection');
+        const displayUniversity = document.getElementById('displayUniversity');
+        const displayCourse = document.getElementById('displayCourse');
+        const displayGrade = document.getElementById('displayGrade');
+        const displayEducationDates = document.getElementById('displayEducationDates');
+        
+        if (profileData.university && profileData.course) {
+            // Get university name from value
+            const universitySelect = document.getElementById('university');
+            const universityName = universitySelect.querySelector(`option[value="${profileData.university}"]`)?.textContent || profileData.university;
+            
+            displayUniversity.textContent = universityName;
+            displayCourse.textContent = profileData.course;
+            displayGrade.textContent = `Grade: ${profileData.grade}`;
+            
+            // Format dates
+            const startDate = profileData.studyStart ? new Date(profileData.studyStart).toLocaleDateString() : '';
+            const endDate = profileData.graduationDate ? new Date(profileData.graduationDate).toLocaleDateString() : '';
+            displayEducationDates.textContent = `${startDate} - ${endDate}`;
+            
+            educationSection.style.display = 'block';
+        } else {
+            educationSection.style.display = 'none';
+        }
+        
         // Update resume section
         const resumeData = this.getResumeData();
         const resumeSection = document.getElementById('resumeSection');
@@ -408,7 +434,12 @@ class AuthManager {
             city: formData.get('city'),
             country: formData.get('country'),
             bio: formData.get('bio'),
-            skills: formData.get('skills')
+            skills: formData.get('skills'),
+            university: formData.get('university'),
+            course: formData.get('course'),
+            grade: formData.get('grade'),
+            studyStart: formData.get('studyStart'),
+            graduationDate: formData.get('graduationDate')
         };
 
         try {

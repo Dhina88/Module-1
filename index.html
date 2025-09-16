@@ -214,6 +214,73 @@
                             <i class="fas fa-tools form-icon"></i>
                         </div>
 
+                        <!-- Education Section -->
+                        <div class="education-section">
+                            <h4><i class="fas fa-graduation-cap"></i> Education Information</h4>
+                            
+                            <div class="form-group">
+                                <label for="university">University *</label>
+                                <select id="university" name="university" required>
+                                    <option value="">Select University</option>
+                                    <option value="UM">University of Malaya (UM)</option>
+                                    <option value="USM">Universiti Sains Malaysia (USM)</option>
+                                    <option value="UPM">Universiti Putra Malaysia (UPM)</option>
+                                    <option value="UTM">Universiti Teknologi Malaysia (UTM)</option>
+                                    <option value="UKM">Universiti Kebangsaan Malaysia (UKM)</option>
+                                    <option value="UUM">Universiti Utara Malaysia (UUM)</option>
+                                    <option value="UMS">Universiti Malaysia Sabah (UMS)</option>
+                                    <option value="UNIMAS">Universiti Malaysia Sarawak (UNIMAS)</option>
+                                    <option value="UMP">Universiti Malaysia Pahang (UMP)</option>
+                                    <option value="UMT">Universiti Malaysia Terengganu (UMT)</option>
+                                    <option value="UMSKAL">Universiti Malaysia Kelantan (UMK)</option>
+                                    <option value="UUM">Universiti Utara Malaysia (UUM)</option>
+                                    <option value="UIA">International Islamic University Malaysia (UIA)</option>
+                                    <option value="MMU">Multimedia University (MMU)</option>
+                                    <option value="UTAR">Universiti Tunku Abdul Rahman (UTAR)</option>
+                                    <option value="TARUC">Tunku Abdul Rahman University College (TARUC)</option>
+                                    <option value="INTI">INTI International University</option>
+                                    <option value="Sunway">Sunway University</option>
+                                    <option value="Taylor">Taylor's University</option>
+                                    <option value="Monash">Monash University Malaysia</option>
+                                    <option value="Nottingham">University of Nottingham Malaysia</option>
+                                    <option value="Heriot-Watt">Heriot-Watt University Malaysia</option>
+                                    <option value="Curtin">Curtin University Malaysia</option>
+                                    <option value="Swinburne">Swinburne University of Technology Sarawak</option>
+                                    <option value="Newcastle">Newcastle University Medicine Malaysia</option>
+                                    <option value="Reading">University of Reading Malaysia</option>
+                                    <option value="Southampton">University of Southampton Malaysia</option>
+                                    <option value="Xiamen">Xiamen University Malaysia</option>
+                                    <option value="other">Other University</option>
+                                </select>
+                                <i class="fas fa-university form-icon"></i>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="course">Course of Study *</label>
+                                <input type="text" id="course" name="course" required placeholder="e.g., Computer Science, Business Administration">
+                                <i class="fas fa-book form-icon"></i>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="grade">Grade/CGPA *</label>
+                                    <input type="text" id="grade" name="grade" required placeholder="e.g., 3.75, First Class, A">
+                                    <i class="fas fa-star form-icon"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studyStart">Study Start Date *</label>
+                                    <input type="date" id="studyStart" name="studyStart" required>
+                                    <i class="fas fa-calendar-alt form-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="graduationDate">Graduation Date *</label>
+                                <input type="date" id="graduationDate" name="graduationDate" required>
+                                <i class="fas fa-calendar-check form-icon"></i>
+                            </div>
+                        </div>
+
                         <button type="submit" class="auth-btn">
                             <i class="fas fa-save"></i>
                             Save Profile
@@ -308,6 +375,20 @@
                             <div class="info-section" id="skillsSection">
                                 <h5>Skills</h5>
                                 <div class="skills-tags" id="displaySkills"></div>
+                            </div>
+
+                            <div class="info-section" id="educationSection">
+                                <h5><i class="fas fa-graduation-cap"></i> Education</h5>
+                                <div class="education-info">
+                                    <div class="education-item">
+                                        <div class="education-header">
+                                            <h6 id="displayUniversity"></h6>
+                                            <span class="education-dates" id="displayEducationDates"></span>
+                                        </div>
+                                        <p class="education-course" id="displayCourse"></p>
+                                        <p class="education-grade" id="displayGrade"></p>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="info-section" id="resumeSection">
