@@ -56,7 +56,10 @@ class AuthManager {
 
         if (uploadArea && fileInput) {
             // Click to upload
-            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('click', (e) => {
+                e.preventDefault();
+                fileInput.click();
+            });
             if (uploadLink) {
                 uploadLink.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -313,18 +316,21 @@ class AuthManager {
         const profileStatus = document.getElementById('profileStatus');
         const profileForm = document.getElementById('profileForm');
         const profileDisplay = document.getElementById('profileDisplay');
+        const tabsContainer = document.getElementById('tabsContainer');
         
         if (isProfileComplete) {
             profileStatus.textContent = 'Profile Complete';
             profileStatus.className = 'status-badge complete';
             profileForm.classList.add('hidden');
             profileDisplay.classList.remove('hidden');
+            if (tabsContainer) tabsContainer.classList.remove('hidden');
             this.displayProfileData(profileData);
         } else {
             profileStatus.textContent = 'Profile Incomplete';
             profileStatus.className = 'status-badge incomplete';
             profileForm.classList.remove('hidden');
             profileDisplay.classList.add('hidden');
+            if (tabsContainer) tabsContainer.classList.add('hidden');
         }
     }
 

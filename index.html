@@ -443,7 +443,8 @@
                     </form>
                 </div>
 
-                <!-- Unified Tabs Navigation -->
+                <!-- Unified Tabs Navigation (hidden until profile complete) -->
+                <div id="tabsContainer" class="hidden">
                 <div class="tabs-nav">
                     <button class="tab-btn active" data-tab="jobs" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i> Jobs</button>
                     <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')"><i class="fas fa-user"></i> Profile</button>
@@ -465,6 +466,7 @@
                     <h3>Your Applications & Interviews</h3>
                     <div id="historyTimeline" class="history-timeline"></div>
                 </section>
+                </div>
 
                 <!-- Profile Display Section -->
                 <div id="profileDisplay" class="profile-display hidden">
