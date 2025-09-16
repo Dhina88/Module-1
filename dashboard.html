@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <h1><i class="fas fa-shield-alt"></i> Candidate Dashboard</h1>
+            <div class="user-info">
+                <span id="dashUserName"></span>
+                <button onclick="goLogout()" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="jobs" onclick="switchDashTab('jobs')"><i class="fas fa-briefcase"></i> Jobs</button>
+                <button class="tab-btn" data-tab="profile" onclick="switchDashTab('profile')"><i class="fas fa-user"></i> Profile</button>
+                <button class="tab-btn" data-tab="history" onclick="switchDashTab('history')"><i class="fas fa-history"></i> History</button>
+            </div>
+
+            <section id="dash-tab-jobs" class="tab-content active">
+                <h3>Available Jobs</h3>
+                <div id="dashJobsList" class="jobs-grid"></div>
+            </section>
+
+            <section id="dash-tab-profile" class="tab-content">
+                <h3>Your Profile</h3>
+                <div id="dashProfile" class="profile-display"></div>
+            </section>
+
+            <section id="dash-tab-history" class="tab-content">
+                <h3>Your Applications & Interviews</h3>
+                <div id="dashHistory" class="history-timeline"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="notificationsPanel" class="notifications-panel"></div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
+

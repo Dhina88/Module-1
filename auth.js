@@ -463,8 +463,11 @@ class AuthManager {
         try {
             this.showLoading('profileFormElement');
             this.saveProfileData(profileData);
-            this.showMessage('Profile saved successfully!', 'success');
+            this.showMessage('Account created successfully! Redirecting to your dashboard...', 'success');
             this.checkProfileCompletion();
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1200);
         } catch (error) {
             this.showMessage('Error saving profile: ' + error.message, 'error');
         } finally {
