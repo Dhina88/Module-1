@@ -144,83 +144,116 @@
                     </div>
                 </div>
 
-                <!-- Profile Completion Form -->
+                <!-- Multi-Step Profile Form -->
                 <div id="profileForm" class="profile-form">
-                    <h3>Complete Your Profile</h3>
+                    <!-- Progress Indicator -->
+                    <div class="progress-indicator">
+                        <div class="progress-step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Biodata</div>
+                        </div>
+                        <div class="progress-step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">University</div>
+                        </div>
+                        <div class="progress-step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Experience</div>
+                        </div>
+                    </div>
+
                     <form id="profileFormElement">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName">First Name *</label>
-                                <input type="text" id="firstName" name="firstName" required>
-                                <i class="fas fa-user form-icon"></i>
+                        <!-- Step 1: Biodata -->
+                        <div id="step1" class="form-step active">
+                            <h3><i class="fas fa-user"></i> Personal Information</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">First Name *</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                    <i class="fas fa-user form-icon"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name *</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                    <i class="fas fa-user form-icon"></i>
+                                </div>
                             </div>
+
                             <div class="form-group">
-                                <label for="lastName">Last Name *</label>
-                                <input type="text" id="lastName" name="lastName" required>
-                                <i class="fas fa-user form-icon"></i>
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                                <i class="fas fa-envelope form-icon"></i>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                    <i class="fas fa-phone form-icon"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dateOfBirth">Date of Birth *</label>
+                                    <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                                    <i class="fas fa-calendar form-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Address *</label>
+                                <textarea id="address" name="address" rows="3" required placeholder="Enter your full address"></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">City *</label>
+                                    <input type="text" id="city" name="city" required>
+                                    <i class="fas fa-map-marker-alt form-icon"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="country">Country *</label>
+                                    <select id="country" name="country" required>
+                                        <option value="">Select Country</option>
+                                        <option value="MY">Malaysia</option>
+                                        <option value="US">United States</option>
+                                        <option value="CA">Canada</option>
+                                        <option value="UK">United Kingdom</option>
+                                        <option value="AU">Australia</option>
+                                        <option value="DE">Germany</option>
+                                        <option value="FR">France</option>
+                                        <option value="IN">India</option>
+                                        <option value="JP">Japan</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <i class="fas fa-globe form-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bio">Bio/Professional Summary</label>
+                                <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself professionally"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="skills">Skills (comma-separated)</label>
+                                <input type="text" id="skills" name="skills" placeholder="e.g., JavaScript, Python, Project Management">
+                                <i class="fas fa-tools form-icon"></i>
+                            </div>
+
+                            <div class="form-navigation">
+                                <button type="button" class="auth-btn next-btn" onclick="nextStep()">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
                             </div>
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="phone">Phone Number *</label>
-                                <input type="tel" id="phone" name="phone" required>
-                                <i class="fas fa-phone form-icon"></i>
-                            </div>
-                            <div class="form-group">
-                                <label for="dateOfBirth">Date of Birth *</label>
-                                <input type="date" id="dateOfBirth" name="dateOfBirth" required>
-                                <i class="fas fa-calendar form-icon"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="address">Address *</label>
-                            <textarea id="address" name="address" rows="3" required placeholder="Enter your full address"></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="city">City *</label>
-                                <input type="text" id="city" name="city" required>
-                                <i class="fas fa-map-marker-alt form-icon"></i>
-                            </div>
-                            <div class="form-group">
-                                <label for="country">Country *</label>
-                                <select id="country" name="country" required>
-                                    <option value="">Select Country</option>
-                                    <option value="US">United States</option>
-                                    <option value="CA">Canada</option>
-                                    <option value="UK">United Kingdom</option>
-                                    <option value="AU">Australia</option>
-                                    <option value="DE">Germany</option>
-                                    <option value="FR">France</option>
-                                    <option value="IN">India</option>
-                                    <option value="JP">Japan</option>
-                                    <option value="other">Other</option>
-                                </select>
-                                <i class="fas fa-globe form-icon"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bio">Bio/Professional Summary</label>
-                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself professionally"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="skills">Skills (comma-separated)</label>
-                            <input type="text" id="skills" name="skills" placeholder="e.g., JavaScript, Python, Project Management">
-                            <i class="fas fa-tools form-icon"></i>
-                        </div>
-
-                        <!-- Education Section -->
-                        <div class="education-section">
-                            <h4><i class="fas fa-graduation-cap"></i> Education Information</h4>
+                        <!-- Step 2: University Information -->
+                        <div id="step2" class="form-step">
+                            <h3><i class="fas fa-graduation-cap"></i> Education Information</h3>
                             
                             <div class="form-group">
                                 <label for="university">University *</label>
-                                <select id="university" name="university" required>
+                                <select id="university" name="university" required onchange="toggleOtherUniversity()">
                                     <option value="">Select University</option>
                                     <option value="UM">University of Malaya (UM)</option>
                                     <option value="USM">Universiti Sains Malaysia (USM)</option>
@@ -232,8 +265,7 @@
                                     <option value="UNIMAS">Universiti Malaysia Sarawak (UNIMAS)</option>
                                     <option value="UMP">Universiti Malaysia Pahang (UMP)</option>
                                     <option value="UMT">Universiti Malaysia Terengganu (UMT)</option>
-                                    <option value="UMSKAL">Universiti Malaysia Kelantan (UMK)</option>
-                                    <option value="UUM">Universiti Utara Malaysia (UUM)</option>
+                                    <option value="UMK">Universiti Malaysia Kelantan (UMK)</option>
                                     <option value="UIA">International Islamic University Malaysia (UIA)</option>
                                     <option value="MMU">Multimedia University (MMU)</option>
                                     <option value="UTAR">Universiti Tunku Abdul Rahman (UTAR)</option>
@@ -252,6 +284,12 @@
                                     <option value="Xiamen">Xiamen University Malaysia</option>
                                     <option value="other">Other University</option>
                                 </select>
+                                <i class="fas fa-university form-icon"></i>
+                            </div>
+
+                            <div id="otherUniversityGroup" class="form-group hidden">
+                                <label for="otherUniversity">Please specify your university *</label>
+                                <input type="text" id="otherUniversity" name="otherUniversity" placeholder="Enter your university name">
                                 <i class="fas fa-university form-icon"></i>
                             </div>
 
@@ -279,12 +317,92 @@
                                 <input type="date" id="graduationDate" name="graduationDate" required>
                                 <i class="fas fa-calendar-check form-icon"></i>
                             </div>
+
+                            <!-- Document Upload Section -->
+                            <div class="document-upload-section">
+                                <h4><i class="fas fa-file-upload"></i> Upload Relevant Documents</h4>
+                                <div class="upload-grid">
+                                    <div class="upload-item">
+                                        <label for="transcript">Academic Transcript</label>
+                                        <input type="file" id="transcript" name="transcript" accept=".pdf,.jpg,.jpeg,.png">
+                                        <i class="fas fa-file-pdf upload-icon"></i>
+                                    </div>
+                                    <div class="upload-item">
+                                        <label for="certificate">Certificate/Diploma</label>
+                                        <input type="file" id="certificate" name="certificate" accept=".pdf,.jpg,.jpeg,.png">
+                                        <i class="fas fa-certificate upload-icon"></i>
+                                    </div>
+                                    <div class="upload-item">
+                                        <label for="completionProof">Completion Proof</label>
+                                        <input type="file" id="completionProof" name="completionProof" accept=".pdf,.jpg,.jpeg,.png">
+                                        <i class="fas fa-check-circle upload-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-navigation">
+                                <button type="button" class="auth-btn secondary prev-btn" onclick="prevStep()">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="auth-btn next-btn" onclick="nextStep()">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
                         </div>
 
-                        <button type="submit" class="auth-btn">
-                            <i class="fas fa-save"></i>
-                            Save Profile
-                        </button>
+                        <!-- Step 3: Experience Information -->
+                        <div id="step3" class="form-step">
+                            <h3><i class="fas fa-briefcase"></i> Relevant / Past Experiences</h3>
+                            
+                            <div id="experienceContainer">
+                                <div class="experience-item">
+                                    <h4>Experience 1</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="exp1Company">Company/Organization *</label>
+                                            <input type="text" id="exp1Company" name="exp1Company" placeholder="Company name">
+                                            <i class="fas fa-building form-icon"></i>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exp1Position">Position/Title *</label>
+                                            <input type="text" id="exp1Position" name="exp1Position" placeholder="Your position">
+                                            <i class="fas fa-user-tie form-icon"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="exp1StartDate">Start Date *</label>
+                                            <input type="date" id="exp1StartDate" name="exp1StartDate">
+                                            <i class="fas fa-calendar-alt form-icon"></i>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exp1EndDate">End Date</label>
+                                            <input type="date" id="exp1EndDate" name="exp1EndDate">
+                                            <i class="fas fa-calendar-check form-icon"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="exp1Description">Job Description</label>
+                                        <textarea id="exp1Description" name="exp1Description" rows="3" placeholder="Describe your responsibilities and achievements"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="add-experience-btn" onclick="addExperience()">
+                                <i class="fas fa-plus"></i> Add Another Experience
+                            </button>
+
+                            <div class="form-navigation">
+                                <button type="button" class="auth-btn secondary prev-btn" onclick="prevStep()">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="submit" class="auth-btn">
+                                    <i class="fas fa-save"></i> Complete Profile
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
 

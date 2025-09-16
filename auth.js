@@ -325,7 +325,7 @@ class AuthManager {
     }
 
     isProfileComplete(profileData) {
-        const requiredFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'address', 'city', 'country', 'university', 'course', 'grade', 'studyStart', 'graduationDate'];
+        const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'address', 'city', 'country', 'university', 'course', 'grade', 'studyStart', 'graduationDate'];
         return requiredFields.every(field => profileData[field] && profileData[field].trim() !== '');
     }
 
@@ -340,7 +340,7 @@ class AuthManager {
     displayProfileData(profileData) {
         // Update profile display
         document.getElementById('displayName').textContent = `${profileData.firstName} ${profileData.lastName}`;
-        document.getElementById('displayEmail').textContent = JSON.parse(localStorage.getItem(this.userKey) || '{}').email || '';
+        document.getElementById('displayEmail').textContent = profileData.email || '';
         document.getElementById('displayPhone').textContent = profileData.phone || '';
         document.getElementById('displayDOB').textContent = profileData.dateOfBirth ? new Date(profileData.dateOfBirth).toLocaleDateString() : '';
         document.getElementById('displayAddress').textContent = profileData.address || '';
@@ -376,9 +376,14 @@ class AuthManager {
         const displayEducationDates = document.getElementById('displayEducationDates');
         
         if (profileData.university && profileData.course) {
-            // Get university name from value
-            const universitySelect = document.getElementById('university');
-            const universityName = universitySelect.querySelector(`option[value="${profileData.university}"]`)?.textContent || profileData.university;
+            // Get university name from value or use other university
+            let universityName;
+            if (profileData.university === 'other' && profileData.otherUniversity) {
+                universityName = profileData.otherUniversity;
+            } else {
+                const universitySelect = document.getElementById('university');
+                universityName = universitySelect.querySelector(`option[value="${profileData.university}"]`)?.textContent || profileData.university;
+            }
             
             displayUniversity.textContent = universityName;
             displayCourse.textContent = profileData.course;
@@ -428,6 +433,7 @@ class AuthManager {
         const profileData = {
             firstName: formData.get('firstName'),
             lastName: formData.get('lastName'),
+            email: formData.get('email'),
             phone: formData.get('phone'),
             dateOfBirth: formData.get('dateOfBirth'),
             address: formData.get('address'),
@@ -436,10 +442,12 @@ class AuthManager {
             bio: formData.get('bio'),
             skills: formData.get('skills'),
             university: formData.get('university'),
+            otherUniversity: formData.get('otherUniversity'),
             course: formData.get('course'),
             grade: formData.get('grade'),
             studyStart: formData.get('studyStart'),
-            graduationDate: formData.get('graduationDate')
+            graduationDate: formData.get('graduationDate'),
+            experiences: this.collectExperiences()
         };
 
         try {
@@ -636,8 +644,108 @@ class AuthManager {
         document.getElementById('profileForm').classList.remove('hidden');
         document.getElementById('profileDisplay').classList.add('hidden');
         
+        // Reset to step 1
+        this.currentStep = 1;
+        this.showStep(1);
+        
         // Scroll to form
         document.getElementById('profileForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Multi-step form functionality
+    currentStep = 1;
+
+    showStep(step) {
+        // Hide all steps
+        document.querySelectorAll('.form-step').forEach(step => {
+            step.classList.remove('active');
+        });
+        
+        // Show current step
+        document.getElementById(`step${step}`).classList.add('active');
+        
+        // Update progress indicator
+        document.querySelectorAll('.progress-step').forEach((progressStep, index) => {
+            if (index + 1 <= step) {
+                progressStep.classList.add('active');
+            } else {
+                progressStep.classList.remove('active');
+            }
+        });
+    }
+
+    nextStep() {
+        if (this.validateCurrentStep()) {
+            if (this.currentStep < 3) {
+                this.currentStep++;
+                this.showStep(this.currentStep);
+            }
+        }
+    }
+
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.currentStep--;
+            this.showStep(this.currentStep);
+        }
+    }
+
+    validateCurrentStep() {
+        const currentStepElement = document.getElementById(`step${this.currentStep}`);
+        const requiredFields = currentStepElement.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.borderColor = '#dc3545';
+                isValid = false;
+            } else {
+                field.style.borderColor = '#e1e5e9';
+            }
+        });
+
+        // Special validation for university
+        if (this.currentStep === 2) {
+            const university = document.getElementById('university').value;
+            const otherUniversity = document.getElementById('otherUniversity').value;
+            
+            if (university === 'other' && !otherUniversity.trim()) {
+                document.getElementById('otherUniversity').style.borderColor = '#dc3545';
+                this.showMessage('Please specify your university name', 'error');
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            this.showMessage('Please fill in all required fields', 'error');
+        }
+
+        return isValid;
+    }
+
+    collectExperiences() {
+        const experiences = [];
+        const experienceItems = document.querySelectorAll('.experience-item');
+        
+        experienceItems.forEach((item, index) => {
+            const company = item.querySelector(`#exp${index + 1}Company`)?.value;
+            const position = item.querySelector(`#exp${index + 1}Position`)?.value;
+            const startDate = item.querySelector(`#exp${index + 1}StartDate`)?.value;
+            const endDate = item.querySelector(`#exp${index + 1}EndDate`)?.value;
+            const description = item.querySelector(`#exp${index + 1}Description`)?.value;
+            
+            if (company && position && startDate) {
+                experiences.push({
+                    company,
+                    position,
+                    startDate,
+                    endDate: endDate || null,
+                    description: description || ''
+                });
+            }
+        });
+        
+        return experiences;
     }
 
     // Utility Methods
@@ -737,6 +845,76 @@ function editProfile() {
     if (authManager) {
         authManager.editProfile();
     }
+}
+
+function nextStep() {
+    if (authManager) {
+        authManager.nextStep();
+    }
+}
+
+function prevStep() {
+    if (authManager) {
+        authManager.prevStep();
+    }
+}
+
+function toggleOtherUniversity() {
+    const university = document.getElementById('university').value;
+    const otherUniversityGroup = document.getElementById('otherUniversityGroup');
+    const otherUniversityInput = document.getElementById('otherUniversity');
+    
+    if (university === 'other') {
+        otherUniversityGroup.classList.remove('hidden');
+        otherUniversityInput.required = true;
+    } else {
+        otherUniversityGroup.classList.add('hidden');
+        otherUniversityInput.required = false;
+        otherUniversityInput.value = '';
+    }
+}
+
+function addExperience() {
+    const container = document.getElementById('experienceContainer');
+    const experienceCount = container.children.length + 1;
+    
+    const experienceHTML = `
+        <div class="experience-item">
+            <h4>Experience ${experienceCount}</h4>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="exp${experienceCount}Company">Company/Organization *</label>
+                    <input type="text" id="exp${experienceCount}Company" name="exp${experienceCount}Company" placeholder="Company name">
+                    <i class="fas fa-building form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="exp${experienceCount}Position">Position/Title *</label>
+                    <input type="text" id="exp${experienceCount}Position" name="exp${experienceCount}Position" placeholder="Your position">
+                    <i class="fas fa-user-tie form-icon"></i>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="exp${experienceCount}StartDate">Start Date *</label>
+                    <input type="date" id="exp${experienceCount}StartDate" name="exp${experienceCount}StartDate">
+                    <i class="fas fa-calendar-alt form-icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="exp${experienceCount}EndDate">End Date</label>
+                    <input type="date" id="exp${experienceCount}EndDate" name="exp${experienceCount}EndDate">
+                    <i class="fas fa-calendar-check form-icon"></i>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="exp${experienceCount}Description">Job Description</label>
+                <textarea id="exp${experienceCount}Description" name="exp${experienceCount}Description" rows="3" placeholder="Describe your responsibilities and achievements"></textarea>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', experienceHTML);
 }
 
 // Initialize the authentication manager when the page loads
