@@ -134,6 +134,197 @@
                     <p><strong>Session Expires:</strong> <span id="sessionExpiry"></span></p>
                 </div>
             </div>
+
+            <!-- Profile Management Section -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-circle"></i> Profile Management</h2>
+                    <div class="profile-status">
+                        <span id="profileStatus" class="status-badge incomplete">Profile Incomplete</span>
+                    </div>
+                </div>
+
+                <!-- Profile Completion Form -->
+                <div id="profileForm" class="profile-form">
+                    <h3>Complete Your Profile</h3>
+                    <form id="profileFormElement">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name *</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                                <i class="fas fa-user form-icon"></i>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                                <i class="fas fa-user form-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                                <i class="fas fa-phone form-icon"></i>
+                            </div>
+                            <div class="form-group">
+                                <label for="dateOfBirth">Date of Birth *</label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                                <i class="fas fa-calendar form-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Address *</label>
+                            <textarea id="address" name="address" rows="3" required placeholder="Enter your full address"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">City *</label>
+                                <input type="text" id="city" name="city" required>
+                                <i class="fas fa-map-marker-alt form-icon"></i>
+                            </div>
+                            <div class="form-group">
+                                <label for="country">Country *</label>
+                                <select id="country" name="country" required>
+                                    <option value="">Select Country</option>
+                                    <option value="US">United States</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="FR">France</option>
+                                    <option value="IN">India</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <i class="fas fa-globe form-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bio">Bio/Professional Summary</label>
+                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself professionally"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="skills">Skills (comma-separated)</label>
+                            <input type="text" id="skills" name="skills" placeholder="e.g., JavaScript, Python, Project Management">
+                            <i class="fas fa-tools form-icon"></i>
+                        </div>
+
+                        <button type="submit" class="auth-btn">
+                            <i class="fas fa-save"></i>
+                            Save Profile
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Resume Upload Section -->
+                <div class="resume-section">
+                    <h3><i class="fas fa-file-upload"></i> Resume Upload</h3>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <p>Drag & drop your resume here or <span class="upload-link">browse files</span></p>
+                            <p class="upload-info">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+                        </div>
+                        <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" style="display: none;">
+                    </div>
+                    
+                    <div id="filePreview" class="file-preview hidden">
+                        <div class="file-info">
+                            <i class="fas fa-file-pdf file-icon"></i>
+                            <div class="file-details">
+                                <span class="file-name"></span>
+                                <span class="file-size"></span>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="resume-actions">
+                        <button id="uploadBtn" class="auth-btn" onclick="uploadResume()" disabled>
+                            <i class="fas fa-upload"></i>
+                            Upload Resume
+                        </button>
+                        <button id="parseBtn" class="auth-btn secondary" onclick="parseResume()" disabled>
+                            <i class="fas fa-magic"></i>
+                            Parse Resume (Optional)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Profile Display Section -->
+                <div id="profileDisplay" class="profile-display hidden">
+                    <h3><i class="fas fa-user-check"></i> Your Profile</h3>
+                    <div class="profile-info">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="profile-details">
+                                <h4 id="displayName"></h4>
+                                <p id="displayEmail"></p>
+                                <p id="displayPhone"></p>
+                            </div>
+                            <button class="edit-profile-btn" onclick="editProfile()">
+                                <i class="fas fa-edit"></i>
+                                Edit Profile
+                            </button>
+                        </div>
+                        
+                        <div class="profile-content">
+                            <div class="info-section">
+                                <h5>Personal Information</h5>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>Date of Birth:</label>
+                                        <span id="displayDOB"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Address:</label>
+                                        <span id="displayAddress"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>City:</label>
+                                        <span id="displayCity"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Country:</label>
+                                        <span id="displayCountry"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-section" id="bioSection">
+                                <h5>Professional Summary</h5>
+                                <p id="displayBio"></p>
+                            </div>
+
+                            <div class="info-section" id="skillsSection">
+                                <h5>Skills</h5>
+                                <div class="skills-tags" id="displaySkills"></div>
+                            </div>
+
+                            <div class="info-section" id="resumeSection">
+                                <h5>Resume</h5>
+                                <div class="resume-info">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span id="resumeFileName"></span>
+                                    <button class="download-btn" onclick="downloadResume()">
+                                        <i class="fas fa-download"></i>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 

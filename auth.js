@@ -38,6 +38,54 @@ class AuthManager {
         if (confirmPassword) {
             confirmPassword.addEventListener('input', () => this.validatePasswordMatch());
         }
+
+        // Profile form
+        const profileForm = document.getElementById('profileFormElement');
+        if (profileForm) {
+            profileForm.addEventListener('submit', (e) => this.handleProfileSubmit(e));
+        }
+
+        // Resume upload
+        this.setupResumeUpload();
+    }
+
+    setupResumeUpload() {
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('resumeFile');
+        const uploadLink = document.querySelector('.upload-link');
+
+        if (uploadArea && fileInput) {
+            // Click to upload
+            uploadArea.addEventListener('click', () => fileInput.click());
+            if (uploadLink) {
+                uploadLink.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fileInput.click();
+                });
+            }
+
+            // File selection
+            fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    this.handleFileSelect({ target: { files } });
+                }
+            });
+        }
     }
 
     // JWT Token Management
@@ -249,6 +297,87 @@ class AuthManager {
         document.getElementById('lastLogin').textContent = new Date(sessionData?.loginTime || Date.now()).toLocaleString();
         document.getElementById('sessionExpiry').textContent = sessionData?.expiresAt ? 
             new Date(sessionData.expiresAt).toLocaleString() : 'Unknown';
+        
+        // Check profile completion status
+        this.checkProfileCompletion();
+    }
+
+    checkProfileCompletion() {
+        const profileData = this.getProfileData();
+        const isProfileComplete = this.isProfileComplete(profileData);
+        
+        const profileStatus = document.getElementById('profileStatus');
+        const profileForm = document.getElementById('profileForm');
+        const profileDisplay = document.getElementById('profileDisplay');
+        
+        if (isProfileComplete) {
+            profileStatus.textContent = 'Profile Complete';
+            profileStatus.className = 'status-badge complete';
+            profileForm.classList.add('hidden');
+            profileDisplay.classList.remove('hidden');
+            this.displayProfileData(profileData);
+        } else {
+            profileStatus.textContent = 'Profile Incomplete';
+            profileStatus.className = 'status-badge incomplete';
+            profileForm.classList.remove('hidden');
+            profileDisplay.classList.add('hidden');
+        }
+    }
+
+    isProfileComplete(profileData) {
+        const requiredFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'address', 'city', 'country'];
+        return requiredFields.every(field => profileData[field] && profileData[field].trim() !== '');
+    }
+
+    getProfileData() {
+        return JSON.parse(localStorage.getItem('profileData') || '{}');
+    }
+
+    saveProfileData(profileData) {
+        localStorage.setItem('profileData', JSON.stringify(profileData));
+    }
+
+    displayProfileData(profileData) {
+        // Update profile display
+        document.getElementById('displayName').textContent = `${profileData.firstName} ${profileData.lastName}`;
+        document.getElementById('displayEmail').textContent = JSON.parse(localStorage.getItem(this.userKey) || '{}').email || '';
+        document.getElementById('displayPhone').textContent = profileData.phone || '';
+        document.getElementById('displayDOB').textContent = profileData.dateOfBirth ? new Date(profileData.dateOfBirth).toLocaleDateString() : '';
+        document.getElementById('displayAddress').textContent = profileData.address || '';
+        document.getElementById('displayCity').textContent = profileData.city || '';
+        document.getElementById('displayCountry').textContent = profileData.country || '';
+        
+        // Update bio section
+        const bioSection = document.getElementById('bioSection');
+        const displayBio = document.getElementById('displayBio');
+        if (profileData.bio && profileData.bio.trim()) {
+            displayBio.textContent = profileData.bio;
+            bioSection.style.display = 'block';
+        } else {
+            bioSection.style.display = 'none';
+        }
+        
+        // Update skills section
+        const skillsSection = document.getElementById('skillsSection');
+        const displaySkills = document.getElementById('displaySkills');
+        if (profileData.skills && profileData.skills.trim()) {
+            const skills = profileData.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+            displaySkills.innerHTML = skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('');
+            skillsSection.style.display = 'block';
+        } else {
+            skillsSection.style.display = 'none';
+        }
+        
+        // Update resume section
+        const resumeData = this.getResumeData();
+        const resumeSection = document.getElementById('resumeSection');
+        const resumeFileName = document.getElementById('resumeFileName');
+        if (resumeData.fileName) {
+            resumeFileName.textContent = resumeData.fileName;
+            resumeSection.style.display = 'block';
+        } else {
+            resumeSection.style.display = 'none';
+        }
     }
 
     // Form Validation
@@ -263,6 +392,221 @@ class AuthManager {
             document.getElementById('confirmPassword').style.borderColor = '#e1e5e9';
             return true;
         }
+    }
+
+    // Profile Management Methods
+    async handleProfileSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        const profileData = {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            phone: formData.get('phone'),
+            dateOfBirth: formData.get('dateOfBirth'),
+            address: formData.get('address'),
+            city: formData.get('city'),
+            country: formData.get('country'),
+            bio: formData.get('bio'),
+            skills: formData.get('skills')
+        };
+
+        try {
+            this.showLoading('profileFormElement');
+            this.saveProfileData(profileData);
+            this.showMessage('Profile saved successfully!', 'success');
+            this.checkProfileCompletion();
+        } catch (error) {
+            this.showMessage('Error saving profile: ' + error.message, 'error');
+        } finally {
+            this.hideLoading('profileFormElement');
+        }
+    }
+
+    handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (!allowedTypes.includes(file.type)) {
+            this.showMessage('Please select a valid file (PDF, DOC, or DOCX)', 'error');
+            return;
+        }
+
+        // Validate file size (5MB max)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            this.showMessage('File size must be less than 5MB', 'error');
+            return;
+        }
+
+        // Show file preview
+        this.showFilePreview(file);
+    }
+
+    showFilePreview(file) {
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.querySelector('.file-name');
+        const fileSize = document.querySelector('.file-size');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const parseBtn = document.getElementById('parseBtn');
+
+        fileName.textContent = file.name;
+        fileSize.textContent = this.formatFileSize(file.size);
+        
+        filePreview.classList.remove('hidden');
+        uploadBtn.disabled = false;
+        parseBtn.disabled = false;
+
+        // Store file for upload
+        this.currentFile = file;
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    async uploadResume() {
+        if (!this.currentFile) {
+            this.showMessage('Please select a file first', 'error');
+            return;
+        }
+
+        try {
+            this.showMessage('Uploading resume...', 'success');
+            
+            // Simulate upload process
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Save resume data
+            const resumeData = {
+                fileName: this.currentFile.name,
+                fileSize: this.currentFile.size,
+                uploadDate: new Date().toISOString(),
+                fileType: this.currentFile.type
+            };
+            
+            this.saveResumeData(resumeData);
+            this.showMessage('Resume uploaded successfully!', 'success');
+            
+            // Update profile display if profile is complete
+            const profileData = this.getProfileData();
+            if (this.isProfileComplete(profileData)) {
+                this.displayProfileData(profileData);
+            }
+            
+        } catch (error) {
+            this.showMessage('Error uploading resume: ' + error.message, 'error');
+        }
+    }
+
+    async parseResume() {
+        if (!this.currentFile) {
+            this.showMessage('Please select a file first', 'error');
+            return;
+        }
+
+        try {
+            this.showMessage('Parsing resume... This may take a moment.', 'success');
+            
+            // Simulate parsing process
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Mock parsed data (in real app, this would come from a parsing service)
+            const parsedData = {
+                name: 'John Doe',
+                email: 'john.doe@example.com',
+                phone: '+1 (555) 123-4567',
+                skills: ['JavaScript', 'Python', 'React', 'Node.js', 'SQL'],
+                experience: '5 years of software development experience',
+                education: 'Bachelor of Computer Science'
+            };
+            
+            // Auto-fill form with parsed data
+            this.autoFillProfile(parsedData);
+            this.showMessage('Resume parsed successfully! Please review and update the information.', 'success');
+            
+        } catch (error) {
+            this.showMessage('Error parsing resume: ' + error.message, 'error');
+        }
+    }
+
+    autoFillProfile(parsedData) {
+        // Auto-fill form fields with parsed data
+        const fields = {
+            firstName: parsedData.name?.split(' ')[0] || '',
+            lastName: parsedData.name?.split(' ').slice(1).join(' ') || '',
+            phone: parsedData.phone || '',
+            skills: parsedData.skills?.join(', ') || ''
+        };
+
+        Object.keys(fields).forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field && fields[fieldId]) {
+                field.value = fields[fieldId];
+            }
+        });
+
+        // Update bio with experience if available
+        const bioField = document.getElementById('bio');
+        if (bioField && parsedData.experience) {
+            bioField.value = parsedData.experience;
+        }
+    }
+
+    getResumeData() {
+        return JSON.parse(localStorage.getItem('resumeData') || '{}');
+    }
+
+    saveResumeData(resumeData) {
+        localStorage.setItem('resumeData', JSON.stringify(resumeData));
+    }
+
+    removeFile() {
+        const filePreview = document.getElementById('filePreview');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const parseBtn = document.getElementById('parseBtn');
+        const fileInput = document.getElementById('resumeFile');
+
+        filePreview.classList.add('hidden');
+        uploadBtn.disabled = true;
+        parseBtn.disabled = true;
+        fileInput.value = '';
+        this.currentFile = null;
+    }
+
+    downloadResume() {
+        const resumeData = this.getResumeData();
+        if (resumeData.fileName) {
+            // In a real app, this would download the actual file
+            this.showMessage('Download functionality would be implemented with backend integration', 'success');
+        } else {
+            this.showMessage('No resume available for download', 'error');
+        }
+    }
+
+    editProfile() {
+        const profileData = this.getProfileData();
+        
+        // Fill form with existing data
+        Object.keys(profileData).forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.value = profileData[fieldId] || '';
+            }
+        });
+
+        // Show form and hide display
+        document.getElementById('profileForm').classList.remove('hidden');
+        document.getElementById('profileDisplay').classList.add('hidden');
+        
+        // Scroll to form
+        document.getElementById('profileForm').scrollIntoView({ behavior: 'smooth' });
     }
 
     // Utility Methods
@@ -292,10 +636,10 @@ class AuthManager {
         messageDiv.className = `message ${type}`;
         messageDiv.textContent = message;
 
-        // Insert message at the top of the active form
-        const activeForm = document.querySelector('.auth-form.active');
-        if (activeForm) {
-            activeForm.insertBefore(messageDiv, activeForm.firstChild);
+        // Insert message at the top of the profile section
+        const profileSection = document.querySelector('.profile-section');
+        if (profileSection) {
+            profileSection.insertBefore(messageDiv, profileSection.firstChild);
             
             // Auto-remove message after 5 seconds
             setTimeout(() => {
@@ -331,6 +675,36 @@ function togglePassword(inputId) {
         input.type = 'password';
         icon.classList.remove('fa-eye-slash');
         icon.classList.add('fa-eye');
+    }
+}
+
+function uploadResume() {
+    if (authManager) {
+        authManager.uploadResume();
+    }
+}
+
+function parseResume() {
+    if (authManager) {
+        authManager.parseResume();
+    }
+}
+
+function removeFile() {
+    if (authManager) {
+        authManager.removeFile();
+    }
+}
+
+function downloadResume() {
+    if (authManager) {
+        authManager.downloadResume();
+    }
+}
+
+function editProfile() {
+    if (authManager) {
+        authManager.editProfile();
     }
 }
 
