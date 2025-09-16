@@ -287,6 +287,10 @@ class AuthManager {
         document.getElementById('registerForm').classList.remove('active');
         
         this.updateDashboardInfo();
+        // Initialize dashboard content
+        this.renderJobs();
+        this.renderHistory();
+        this.startMockNotifications();
     }
 
     updateDashboardInfo() {
@@ -704,6 +708,24 @@ class AuthManager {
             }
         });
 
+        // Require resume uploaded on step 1
+        if (this.currentStep === 1) {
+            const resumeData = this.getResumeData();
+            if (!resumeData.fileName) {
+                this.showMessage('Please upload your resume before proceeding', 'error');
+                isValid = false;
+            }
+        }
+
+        // Require resume uploaded on step 1
+        if (this.currentStep === 1) {
+            const resumeData = this.getResumeData();
+            if (!resumeData.fileName) {
+                this.showMessage('Please upload your resume before proceeding', 'error');
+                isValid = false;
+            }
+        }
+
         // Special validation for university
         if (this.currentStep === 2) {
             const university = document.getElementById('university').value;
@@ -721,6 +743,75 @@ class AuthManager {
         }
 
         return isValid;
+    }
+
+    // Dashboard: Tabs and Data
+    switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+        const pane = document.getElementById(`tab-${tab}`);
+        if (btn) btn.classList.add('active');
+        if (pane) pane.classList.add('active');
+    }
+
+    renderJobs() {
+        const jobs = [
+            { title: 'Frontend Developer', company: 'TechNova', location: 'Kuala Lumpur', tags: ['React', 'TypeScript', 'UI'], id: 1 },
+            { title: 'Backend Engineer', company: 'CloudBridge', location: 'Penang', tags: ['Node.js', 'Express', 'MongoDB'], id: 2 },
+            { title: 'Data Analyst', company: 'InsightIQ', location: 'Remote', tags: ['SQL', 'Python', 'BI'], id: 3 },
+            { title: 'Product Manager', company: 'BrightApps', location: 'Selangor', tags: ['Agile', 'Roadmap'], id: 4 }
+        ];
+        const list = document.getElementById('jobsList');
+        if (!list) return;
+        list.innerHTML = jobs.map(j => `
+            <div class=\"job-card\">
+                <h4>${j.title}</h4>
+                <div class=\"job-meta\">${j.company} · ${j.location}</div>
+                <div class=\"job-tags\">${j.tags.map(t => `<span class=\\\"job-tag\\\">${t}</span>`).join('')}</div>
+                <button class=\"apply-btn\" onclick=\"applyJob(${j.id})\">Apply</button>
+            </div>
+        `).join('');
+    }
+
+    renderHistory() {
+        const history = [
+            { title: 'Frontend Developer at TechNova', status: 'Applied', pill: 'status-applied', time: '2d ago' },
+            { title: 'Backend Engineer at CloudBridge', status: 'Interview Scheduled', pill: 'status-interview', time: '1d ago' },
+            { title: 'Data Analyst at InsightIQ', status: 'Offer Extended', pill: 'status-offer', time: 'Just now' }
+        ];
+        const container = document.getElementById('historyTimeline');
+        if (!container) return;
+        container.innerHTML = history.map(h => `
+            <div class=\"history-item\">
+                <div class=\"history-title\">${h.title}</div>
+                <div class=\"history-status\"><span class=\"status-pill ${h.pill}\">${h.status}</span> · ${h.time}</div>
+            </div>
+        `).join('');
+    }
+
+    startMockNotifications() {
+        if (this._notifInterval) return;
+        let panel = document.getElementById('notificationsPanel');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'notificationsPanel';
+            panel.className = 'notifications-panel';
+            document.body.appendChild(panel);
+        }
+        const messages = [
+            { title: 'Interview Reminder', text: 'Your interview with CloudBridge is tomorrow at 10:00 AM.' },
+            { title: 'New Job Match', text: 'A new React role matches your profile.' },
+            { title: 'Application Update', text: 'TechNova viewed your application.' }
+        ];
+        this._notifInterval = setInterval(() => {
+            const m = messages[Math.floor(Math.random()*messages.length)];
+            const n = document.createElement('div');
+            n.className = 'notification';
+            n.innerHTML = `<h5>${m.title}</h5><p>${m.text}</p><div class=\"time\">${new Date().toLocaleTimeString()}</div>`;
+            panel.appendChild(n);
+            setTimeout(() => n.remove(), 10000);
+        }, 8000);
     }
 
     collectExperiences() {
@@ -845,6 +936,17 @@ function editProfile() {
     if (authManager) {
         authManager.editProfile();
     }
+}
+
+function switchTab(tab) {
+    if (authManager) {
+        authManager.switchTab(tab);
+    }
+}
+
+function applyJob(id) {
+    // Mock apply action
+    alert('Applied to job #' + id + ' successfully!');
 }
 
 function nextStep() {
